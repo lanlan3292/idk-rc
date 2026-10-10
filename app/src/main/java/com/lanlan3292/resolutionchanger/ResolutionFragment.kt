@@ -24,9 +24,9 @@ class ResolutionFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val options = listOf(
-        ResolutionOption("2k", R.string.option_2k, 1440, 3200, 560),
+        ResolutionOption("1440p", R.string.option_1440p, 1440, 3200, 560),
         ResolutionOption("1080p", R.string.option_1080p, 1080, 2400, 420),
-        ResolutionOption("720p", R.string.option_720p, 720, 1600, 280)
+        // ResolutionOption("720p", R.string.option_720p, 720, 1600, 280)
     )
 
     private var selectedId: String? = null

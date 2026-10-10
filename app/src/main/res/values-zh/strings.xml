@@ -3,9 +3,9 @@
     <string name="app_name">分辨率调节</string>
     <string name="title_resolution">屏幕分辨率</string>
     <string name="hint_resolution">设置较低的分辨率可以节省电量，但可能会影响显示清晰度和部分应用的布局。</string>
-    <string name="option_2k">2K　1440×3200 / 560</string>
-    <string name="option_1080p">1080P　1080×2400 / 420</string>
-    <string name="option_720p">720P　720×1600 / 280</string>
+    <string name="option_1440p">1440p</string>
+    <string name="option_1080p">1080p</string>
+    <string name="option_720p">720p</string>
     <string name="cd_back">返回</string>
     <string name="cd_info">提示</string>
     <string name="toast_shizuku_not_running">请先启动 Shizuku 服务</string>
