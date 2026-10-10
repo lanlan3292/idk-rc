@@ -8,13 +8,15 @@ import java.lang.reflect.Method
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-/**
- * 通过反射调用 Shizuku.newProcess 执行 shell 命令。
- * 不依赖 AIDL / UserService，避免 aidl 编译问题。
- */
 object ShizukuHelper {
 
     private const val TAG = "ShizukuHelper"
+
+    data class DisplayState(
+        val width: Int,
+        val height: Int,
+        val density: Int
+    )
 
     private var newProcessMethod: Method? = null
 
@@ -42,14 +44,6 @@ object ShizukuHelper {
         if (Shizuku.checkSelfPermission() != 0) {
             Shizuku.requestPermission(requestCode)
         }
-    }
-
-    fun bindUserService() {
-        // no-op（反射方案无需 bind）
-    }
-
-    fun unbindUserService() {
-        // no-op
     }
 
     private fun createProcess(command: String): Process? {
@@ -92,17 +86,47 @@ object ShizukuHelper {
         }
     }
 
+    /**
+     * 读取当前逻辑分辨率与密度。
+     * wm size 输出示例：
+     *   Physical size: 1440x3200
+     *   Override size: 1080x2400
+     * 优先使用 Override，没有则用 Physical。
+     */
+    suspend fun getCurrentDisplayState(): DisplayState? {
+        val sizeOut = exec("wm size")
+        val densityOut = exec("wm density")
+        if (sizeOut.startsWith("ERROR") || densityOut.startsWith("ERROR")) {
+            return null
+        }
+
+        val sizeRegex = Regex("""(?:Override|Physical) size:\s*(\d+)x(\d+)""")
+        val densityRegex = Regex("""(?:Override|Physical) density:\s*(\d+)""")
+
+        // 优先 Override
+        val overrideSize = Regex("""Override size:\s*(\d+)x(\d+)""").find(sizeOut)
+        val physicalSize = Regex("""Physical size:\s*(\d+)x(\d+)""").find(sizeOut)
+        val sizeMatch = overrideSize ?: physicalSize
+
+        val overrideDensity = Regex("""Override density:\s*(\d+)""").find(densityOut)
+        val physicalDensity = Regex("""Physical density:\s*(\d+)""").find(densityOut)
+        val densityMatch = overrideDensity ?: physicalDensity
+
+        if (sizeMatch == null || densityMatch == null) {
+            Log.w(TAG, "parse failed size=$sizeOut density=$densityOut")
+            return null
+        }
+
+        val w = sizeMatch.groupValues[1].toInt()
+        val h = sizeMatch.groupValues[2].toInt()
+        val d = densityMatch.groupValues[1].toInt()
+        return DisplayState(w, h, d)
+    }
+
     suspend fun setResolution(width: Int, height: Int, density: Int): Boolean {
         val r1 = exec("wm size ${width}x${height}")
         val r2 = exec("wm density $density")
         Log.i(TAG, "size: $r1 | density: $r2")
-        return !r1.startsWith("ERROR") && !r2.startsWith("ERROR")
-    }
-
-    suspend fun resetResolution(): Boolean {
-        val r1 = exec("wm size reset")
-        val r2 = exec("wm density reset")
-        Log.i(TAG, "reset size: $r1 | density: $r2")
         return !r1.startsWith("ERROR") && !r2.startsWith("ERROR")
     }
 }

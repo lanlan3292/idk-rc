@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+      对齐 AOSP SettingsLib：
+      colorBackground = SurfaceContainer（页面灰底）
+      Preference 项 = SurfaceContainerLowest（更白）
+    -->
     <style name="Theme.resolutionchanger" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:colorBackground">?attr/colorSurfaceContainer</item>
+        <item name="android:windowBackground">?attr/colorSurfaceContainer</item>
     </style>
 </resources>

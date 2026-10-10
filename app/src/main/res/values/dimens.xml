@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AOSP SettingsLib values-v35: settingslib_preference_corner_radius = 20dp -->
+    <dimen name="preference_corner_radius">20dp</dimen>
+    <dimen name="preference_inner_corner_radius">4dp</dimen>
+    <!-- layer-list top inset 2dp → 行间距 -->
+    <dimen name="preference_item_gap">2dp</dimen>
+    <dimen name="preference_item_min_height">56dp</dimen>
+    <dimen name="preference_horizontal_padding">24dp</dimen>
+    <dimen name="preference_group_margin_horizontal">16dp</dimen>
+</resources>

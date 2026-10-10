@@ -1,5 +1,6 @@
 package com.lanlan3292.resolutionchanger
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,8 +26,7 @@ class ResolutionFragment : Fragment() {
     private val options = listOf(
         ResolutionOption("2k", R.string.option_2k, 1440, 3200, 560),
         ResolutionOption("1080p", R.string.option_1080p, 1080, 2400, 420),
-        ResolutionOption("720p", R.string.option_720p, 720, 1600, 280),
-        ResolutionOption("reset", R.string.option_reset, 0, 0, 0, isReset = true)
+        ResolutionOption("720p", R.string.option_720p, 720, 1600, 280)
     )
 
     private var selectedId: String? = null
@@ -44,28 +44,56 @@ class ResolutionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = OptionAdapter(options) { option ->
-            onOptionSelected(option)
-        }
+        adapter = OptionAdapter(options) { option -> onOptionSelected(option) }
         binding.recyclerOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerOptions.adapter = adapter
+        binding.recyclerOptions.itemAnimator = null
+        // 系统默认 overscroll 回弹（可滚动）
+        binding.recyclerOptions.overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
 
-        binding.btnBack.setOnClickListener {
-            requireActivity().finish()
-        }
+        val gap = resources.getDimensionPixelSize(R.dimen.preference_item_gap)
+        binding.recyclerOptions.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                val pos = parent.getChildAdapterPosition(view)
+                if (pos > 0) outRect.top = gap
+            }
+        })
 
-        checkShizuku()
+        binding.btnBack.setOnClickListener { requireActivity().finish() }
+
+        checkShizukuAndLoadState()
     }
 
-    private fun checkShizuku() {
+    private fun checkShizukuAndLoadState() {
         if (!Shizuku.pingBinder()) {
             Toast.makeText(requireContext(), R.string.toast_shizuku_not_running, Toast.LENGTH_LONG).show()
             return
         }
         if (Shizuku.checkSelfPermission() != 0) {
             Shizuku.requestPermission(1001)
-        } else {
-            ShizukuHelper.bindUserService()
+            return
+        }
+        refreshCurrentSelection()
+    }
+
+    private fun refreshCurrentSelection() {
+        lifecycleScope.launch {
+            val state = withContext(Dispatchers.IO) {
+                ShizukuHelper.getCurrentDisplayState()
+            }
+            selectedId = if (state != null) {
+                options.find {
+                    it.width == state.width && it.height == state.height && it.density == state.density
+                }?.id ?: options.find {
+                    it.width == state.width && it.height == state.height
+                }?.id
+            } else null
+            adapter.notifyDataSetChanged()
         }
     }
 
@@ -75,28 +103,33 @@ class ResolutionFragment : Fragment() {
             ShizukuHelper.requestPermission()
             return
         }
+        if (option.id == selectedId) return
 
         selectedId = option.id
         adapter.notifyDataSetChanged()
 
         lifecycleScope.launch {
             val success = withContext(Dispatchers.IO) {
-                if (option.isReset) {
-                    ShizukuHelper.resetResolution()
-                } else {
-                    ShizukuHelper.setResolution(option.width, option.height, option.density)
-                }
+                ShizukuHelper.setResolution(option.width, option.height, option.density)
             }
             withContext(Dispatchers.Main) {
-                val msg = if (success) {
-                    if (option.isReset) getString(R.string.toast_reset_success)
-                    else getString(R.string.toast_switch_success, getString(option.titleRes))
+                if (success) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.toast_switch_success, getString(option.titleRes)),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    getString(R.string.toast_failed)
+                    Toast.makeText(requireContext(), R.string.toast_failed, Toast.LENGTH_SHORT).show()
                 }
-                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                refreshCurrentSelection()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (ShizukuHelper.isReady()) refreshCurrentSelection()
     }
 
     override fun onDestroyView() {
@@ -124,6 +157,14 @@ class ResolutionFragment : Fragment() {
             val item = items[position]
             holder.title.setText(item.titleRes)
             holder.radio.isChecked = item.id == selectedId
+
+            val bg = when {
+                items.size == 1 -> R.drawable.settingslib_round_bg_single
+                position == 0 -> R.drawable.settingslib_round_bg_top
+                position == items.lastIndex -> R.drawable.settingslib_round_bg_bottom
+                else -> R.drawable.settingslib_round_bg_middle
+            }
+            holder.itemView.setBackgroundResource(bg)
             holder.itemView.setOnClickListener { onClick(item) }
         }
 

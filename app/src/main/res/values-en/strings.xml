@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Resolution Changer</string>
+    <string name="title_resolution">Display resolution</string>
+    <string name="hint_resolution">A lower resolution can save battery, but may affect display clarity and the layout of some apps.</string>
+    <string name="option_2k">2K　1440×3200 / 560</string>
+    <string name="option_1080p">1080P　1080×2400 / 420</string>
+    <string name="option_720p">720P　720×1600 / 280</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_info">Info</string>
+    <string name="toast_shizuku_not_running">Please start the Shizuku service first</string>
+    <string name="toast_shizuku_not_ready">Shizuku is not ready. Please grant permission and try again</string>
+    <string name="toast_switch_success">Switched to %1$s</string>
+    <string name="toast_failed">Failed. Please check Shizuku permission</string>
+</resources>
