@@ -7,7 +7,7 @@ import rikka.shizuku.Shizuku
 class MainActivity : AppCompatActivity() {
 
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
-        ShizukuHelper.bindUserService()
+        // binder 已就绪
     }
 
     private val binderDeadListener = Shizuku.OnBinderDeadListener {
@@ -32,6 +32,5 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         Shizuku.removeBinderReceivedListener(binderReceivedListener)
         Shizuku.removeBinderDeadListener(binderDeadListener)
-        ShizukuHelper.unbindUserService()
     }
 }
