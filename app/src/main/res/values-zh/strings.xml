@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">分辨率调节</string>
+    <string name="title_resolution">屏幕分辨率</string>
+    <string name="hint_resolution">设置较低的分辨率可以节省电量，但可能会影响显示清晰度和部分应用的布局。</string>
+    <string name="option_2k">2K</string>
+    <string name="option_1080p">1080P</string>
+    <string name="option_720p">720P</string>
+    <string name="option_reset">恢复默认</string>
+    <string name="cd_back">返回</string>
+    <string name="cd_info">提示</string>
+    <string name="toast_shizuku_not_running">请先启动 Shizuku 服务</string>
+    <string name="toast_shizuku_not_ready">Shizuku 未就绪，请授权后重试</string>
+    <string name="toast_switch_success">已切换到 %1$s</string>
+    <string name="toast_reset_success">已恢复默认分辨率</string>
+    <string name="toast_failed">修改失败，请检查 Shizuku 权限</string>
+</resources>
