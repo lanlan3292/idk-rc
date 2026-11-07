@@ -2,6 +2,8 @@
 <resources>
     <string name="app_name">分辨率调节</string>
     <string name="title_resolution">屏幕分辨率</string>
+    <string name="subtitle_resolution">选择屏幕使用的分辨率</string>
+    <string name="option_summary">%1$d × %2$d · 密度 %3$d</string>
     <string name="hint_resolution">设置较低的分辨率可以节省电量，但可能会影响显示清晰度和部分应用的布局。</string>
     <string name="option_1440p">1440p</string>
     <string name="option_1080p">1080p</string>

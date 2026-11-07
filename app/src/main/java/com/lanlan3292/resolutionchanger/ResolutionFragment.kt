@@ -145,6 +145,7 @@ class ResolutionFragment : Fragment() {
         inner class VH(view: View) : RecyclerView.ViewHolder(view) {
             val radio: RadioButton = view.findViewById(R.id.radio)
             val title: TextView = view.findViewById(R.id.tv_title)
+            val summary: TextView = view.findViewById(R.id.tv_summary)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -156,6 +157,7 @@ class ResolutionFragment : Fragment() {
         override fun onBindViewHolder(holder: VH, position: Int) {
             val item = items[position]
             holder.title.setText(item.titleRes)
+            holder.summary.text = getString(R.string.option_summary, item.width, item.height, item.density)
             holder.radio.isChecked = item.id == selectedId
 
             val bg = when {
